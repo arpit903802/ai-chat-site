@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+
+__pycache__/
+*.pyc
+
+.venv/
+venv/
+
+.DS_Store
+
+results.txt
+smart_results.txt
+comparison.txt
