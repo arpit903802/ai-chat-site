@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>NOVA AI</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background:
+        radial-gradient(
+            circle at 20% 10%,
+            rgba(255,185,70,.13),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 80% 80%,
+            rgba(100,80,255,.12),
+            transparent 30%
+        ),
+        #070707;
+
+    color:#f5f5f5;
+    min-height:100vh;
+}
+
+header{
+    height:70px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 25px;
+
+    backdrop-filter:blur(20px);
+
+    position:sticky;
+    top:0;
+    z-index:10;
+}
+
+.logo{
+    font-size:21px;
+    font-weight:800;
+    letter-spacing:3px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #fff,
+            #d6a84f
+        );
+
+    -webkit-background-clip:text;
+    color:transparent;
+}
+
+.status{
+    font-size:12px;
+    color:#aaa;
+}
+
+.status span{
+    display:inline-block;
+    width:7px;
+    height:7px;
+    background:#45e38c;
+    border-radius:50%;
+    margin-right:7px;
+    box-shadow:0 0 12px #45e38c;
+}
+
+main{
+    max-width:1050px;
+    margin:auto;
+    padding:30px 16px 130px;
+}
+
+.hero{
+    text-align:center;
+    padding:45px 0 30px;
+}
+
+.hero h1{
+    font-size:clamp(38px,8vw,76px);
+    margin:0;
+
+    letter-spacing:-4px;
+
+    background:
+        linear-gradient(
+            120deg,
+            #fff,
+            #bdbdbd,
+            #c99a43
+        );
+
+    -webkit-background-clip:text;
+    color:transparent;
+}
+
+.hero p{
+    color:#8e8e8e;
+    margin-top:14px;
+}
+
+.chat{
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+}
+
+.message{
+    max-width:85%;
+    padding:16px 18px;
+
+    border-radius:20px;
+
+    line-height:1.65;
+
+    white-space:pre-wrap;
+}
+
+.user{
+    align-self:flex-end;
+
+    background:
+        linear-gradient(
+            135deg,
+            #252525,
+            #161616
+        );
+
+    border:1px solid rgba(255,255,255,.09);
+}
+
+.ai{
+    align-self:flex-start;
+
+    background:
+        rgba(255,255,255,.035);
+
+    border:1px solid rgba(255,255,255,.07);
+
+    backdrop-filter:blur(15px);
+}
+
+.composer{
+    position:fixed;
+    bottom:18px;
+    left:50%;
+    transform:translateX(-50%);
+
+    width:min(900px,calc(100% - 24px));
+
+    padding:10px;
+
+    background:
+        rgba(18,18,18,.88);
+
+    border:
+        1px solid rgba(255,255,255,.1);
+
+    border-radius:25px;
+
+    backdrop-filter:blur(25px);
+
+    box-shadow:
+        0 20px 70px rgba(0,0,0,.5);
+}
+
+.input-row{
+    display:flex;
+    gap:8px;
+}
+
+textarea{
+    flex:1;
+
+    min-height:48px;
+    max-height:150px;
+
+    resize:none;
+
+    background:transparent;
+    color:white;
+
+    border:0;
+    outline:0;
+
+    padding:13px;
+
+    font-size:15px;
+}
+
+button{
+    border:0;
+    cursor:pointer;
+
+    border-radius:16px;
+
+    padding:0 17px;
+
+    font-weight:700;
+
+    background:
+        linear-gradient(
+            135deg,
+            #e8bd69,
+            #9c6d25
+        );
+
+    color:#111;
+
+    transition:.2s;
+}
+
+button:hover{
+    transform:translateY(-1px);
+    filter:brightness(1.08);
+}
+
+.tools{
+    display:flex;
+    gap:8px;
+    padding:7px 5px 2px;
+}
+
+.tool{
+    padding:7px 11px;
+
+    border-radius:12px;
+
+    background:#191919;
+
+    color:#aaa;
+
+    border:1px solid #292929;
+
+    font-size:12px;
+
+    cursor:pointer;
+}
+
+.tool:hover{
+    color:white;
+}
+
+input[type=file]{
+    display:none;
+}
+
+.preview{
+    margin-top:8px;
+}
+
+.preview img{
+    max-width:180px;
+    border-radius:15px;
+    border:1px solid #333;
+}
+
+.generated{
+    max-width:100%;
+    border-radius:18px;
+    margin-top:10px;
+}
+
+.typing{
+    color:#777;
+    font-size:13px;
+}
+
+@media(max-width:600px){
+
+    header{
+        padding:0 15px;
+    }
+
+    .hero{
+        padding-top:25px;
+    }
+
+    .message{
+        max-width:94%;
+    }
+
+    .composer{
+        bottom:10px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="logo">
+NOVA AI
+</div>
+
+<div class="status">
+<span></span>
+AI ONLINE
+</div>
+
+</header>
+
+<main>
+
+<section class="hero">
+
+<h1>NOVA</h1>
+
+<p>
+Intelligent conversation. Vision. Creativity.
+</p>
+
+</section>
+
+<div id="chat" class="chat"></div>
+
+</main>
+
+<div class="composer">
+
+<div id="preview" class="preview"></div>
+
+<div class="input-row">
+
+<textarea
+id="input"
+placeholder="Ask NOVA anything..."
+></textarea>
+
+<button onclick="sendMessage()">
+➤
+</button>
+
+</div>
+
+<div class="tools">
+
+<label class="tool">
+📷 Image
+<input
+type="file"
+id="imageInput"
+accept="image/*"
+onchange="previewImage(event)"
+>
+</label>
+
+<div
+class="tool"
+onclick="generateImage()"
+>
+🎨 Generate Image
+</div>
+
+<div
+class="tool"
+onclick="clearChat()"
+>
+Clear
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+const chat = document.getElementById("chat");
+const input = document.getElementById("input");
+
+let conversation = [];
+
+
+function addMessage(text,type){
+
+    const div = document.createElement("div");
+
+    div.className =
+        "message " + type;
+
+    div.textContent = text;
+
+    chat.appendChild(div);
+
+    window.scrollTo({
+        top:document.body.scrollHeight,
+        behavior:"smooth"
+    });
+
+    return div;
+}
+
+
+function clearChat(){
+
+    conversation = [];
+
+    chat.innerHTML = "";
+
+}
+
+
+async function sendMessage(){
+
+    const text = input.value.trim();
+
+    if(!text) return;
+
+    addMessage(text,"user");
+
+    input.value = "";
+
+    conversation.push({
+        role:"user",
+        content:text
+    });
+
+    const ai = addMessage(
+        "Thinking...",
+        "ai"
+    );
+
+    try{
+
+        const response = await fetch(
+            "/api/chat",
+            {
+                method:"POST",
+
+                headers:{
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body:JSON.stringify({
+                    messages:conversation
+                })
+            }
+        );
+
+        const data =
+            await response.json();
+
+        if(!response.ok || !data.ok){
+
+            throw new Error(
+                data.error ||
+                "AI request failed"
+            );
+        }
+
+        ai.textContent =
+            data.answer;
+
+        conversation.push({
+            role:"assistant",
+            content:data.answer
+        });
+
+    }catch(error){
+
+        ai.textContent =
+            "Sorry, request failed: "
+            + error.message;
+
+    }
+
+}
+
+
+function previewImage(event){
+
+    const file =
+        event.target.files[0];
+
+    if(!file) return;
+
+    const reader =
+        new FileReader();
+
+    reader.onload = function(){
+
+        document.getElementById(
+            "preview"
+        ).innerHTML =
+        `<img src="${reader.result}">`;
+
+    };
+
+    reader.readAsDataURL(file);
+}
+
+
+async function analyzeImage(){
+
+    const file =
+        document.getElementById(
+            "imageInput"
+        ).files[0];
+
+    if(!file){
+
+        alert("Please select an image first.");
+
+        return;
+    }
+
+    const prompt =
+        input.value.trim() ||
+        "Describe this image in detail.";
+
+    addMessage(
+        "Analyze this image: " + prompt,
+        "user"
+    );
+
+    input.value = "";
+
+    const reader =
+        new FileReader();
+
+    reader.onload = async function(){
+
+        const ai =
+            addMessage(
+                "Analyzing image...",
+                "ai"
+            );
+
+        try{
+
+            const response =
+                await fetch(
+                    "/api/vision",
+                    {
+                        method:"POST",
+
+                        headers:{
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:JSON.stringify({
+                            image:reader.result,
+                            prompt:prompt
+                        })
+                    }
+                );
+
+            const data =
+                await response.json();
+
+            if(!response.ok || !data.ok){
+
+                throw new Error(
+                    data.error ||
+                    "Vision request failed"
+                );
+            }
+
+            ai.textContent =
+                data.answer;
+
+        }catch(error){
+
+            ai.textContent =
+                "Vision error: "
+                + error.message;
+
+        }
+
+    };
+
+    reader.readAsDataURL(file);
+
+}
+
+
+async function generateImage(){
+
+    const prompt =
+        input.value.trim();
+
+    if(!prompt){
+
+        alert(
+            "Pehle image ka prompt likho."
+        );
+
+        return;
+    }
+
+    addMessage(
+        "Generate an image: " + prompt,
+        "user"
+    );
+
+    input.value = "";
+
+    const ai =
+        addMessage(
+            "Creating your image...",
+            "ai"
+        );
+
+    try{
+
+        const response =
+            await fetch(
+                "/api/image",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:JSON.stringify({
+                        prompt:prompt
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if(!response.ok || !data.ok){
+
+            throw new Error(
+                data.error ||
+                "Image generation failed"
+            );
+        }
+
+        ai.innerHTML =
+            "Generated image:" +
+            `<br><img class="generated"
+            src="${data.image}">`;
+
+    }catch(error){
+
+        ai.textContent =
+            "Image generation error: "
+            + error.message;
+
+    }
+
+}
+
+
+input.addEventListener(
+    "keydown",
+    function(e){
+
+        if(
+            e.key === "Enter" &&
+            !e.shiftKey
+        ){
+
+            e.preventDefault();
+
+            sendMessage();
+
+        }
+
+    }
+);
+
+
+// Image button -> vision
+document.getElementById(
+    "imageInput"
+).addEventListener(
+    "change",
+    function(){
+
+        if(this.files.length){
+
+            analyzeImage();
+
+        }
+
+    }
+);
+
+
+addMessage(
+    "Hello 👋 I'm NOVA. Ask me anything, upload an image, or create an image from a prompt.",
+    "ai"
+);
+
+</script>
+
+</body>
+</html>
